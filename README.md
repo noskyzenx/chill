@@ -1,53 +1,40 @@
-Chill — macOS Menu Bar Sitting Timer
-===================================
+# Chill - Your Minimalist Sitting Timer for macOS
 
-Purpose
-- Track how long you’ve been sitting. The menu bar shows a mm:ss (or hh:mm:ss) timer inside a color capsule that transitions from green → yellow/orange → red as time passes. If the system is idle (no keyboard/mouse) for more than 5 minutes, the session auto-resets to 00:00 on first input thereafter.
+Chill is a subtle yet powerful menu bar application for macOS designed to help you be more mindful of your sitting time. It tracks how long you've been at your desk and provides a gentle, color-coded reminder to take a break.
 
-Highlights
-- SwiftUI + AppKit (MenuBarExtra on macOS 13+).
-- 1s tick with low-overhead `DispatchSourceTimer`.
-- Idle detection using common HID events; ends current session after idle > N seconds (default 300), and starts a new session on input.
-- Preferences for color thresholds (15/45 minutes by default) and idle reset.
-- Start/Pause/Reset from the menu. Tooltips show “Sitting: Xm • Idle: Ym”.
-- State persisted in `UserDefaults` (thresholds, idle reset, session state).
-- Debug hooks (Debug build): simulate idle; fast-forward +5m/+15m/+1h.
+![Chill Screenshot](https://user-images.githubusercontent.com/12345/67890.png) <!--- Placeholder for a screenshot -->
 
-Requirements
-- macOS 13.0 or later (MenuBarExtra). The project sets LSUIElement to run as a menu bar–only app (no Dock icon).
+## Features
 
-Project Structure
-- Xcode project: `chill.xcodeproj`
-- Sources under `chill/`
-  - `chillApp.swift`: App entry + MenuBarExtra label/menu
-  - `SittingTimer.swift`: State machine, timer, idle detection, persistence
-  - `ColorScale.swift`: Color interpolation utility
-  - `StatusItemView.swift`: Menu bar label with capsule background
-  - `PreferencesView.swift`: Thresholds + idle reset + debug tools
-  - `Info.plist`, `Assets.xcassets`
+*   **Minimalist Menu Bar UI:** A simple timer in your menu bar that stays out of your way.
+*   **Color-Coded Timer:** The timer's background color changes from green to yellow to red as your sitting time increases, giving you a quick visual cue.
+*   **Automatic Idle Detection:** Chill automatically detects when you're away from your computer and resets the timer for your next session.
+*   **Customizable Thresholds:** You can easily customize the time thresholds for the color changes to fit your personal goals.
+*   **Start, Pause, and Reset:** Control the timer directly from the menu bar.
+*   **Lightweight and Efficient:** Chill is a native Swift application with minimal resource usage.
+*   **Persistence:** Your settings and timer state are saved across app launches.
 
-Build & Run
-1. Open `chill.xcodeproj` in Xcode 14+.
-2. Select the `chill` scheme and run. The app appears in the menu bar as a time capsule.
-3. By default, the timer starts immediately and increments every second.
+## How to Use
 
-Usage
-- Start/Pause: Toggle from the menu.
-- Reset: Sets the timer to 00:00 (if running, starts a fresh session from now; if paused, clears paused time).
-- Preferences: Adjust thresholds and idle reset minutes. Values persist across launches.
-- Idle session end: If idleSeconds > 300s (or your configured value), the current session ends and freezes; on first input a new session begins from 0.
+1.  **Launch Chill:** The timer will appear in your menu bar and start counting up immediately.
+2.  **Monitor Your Sitting Time:** The timer shows the elapsed time, and the color will change as you reach your defined thresholds.
+3.  **Control the Timer:** Click the timer in the menu bar to reveal options to pause, start, or reset the timer.
+4.  **Automatic Reset:** If you're idle for a configurable amount of time, the timer will automatically reset when you become active again.
 
-Debug (Debug build only)
-- Preferences → Debug:
-  - Simulate idle > threshold: Forces idle state so you can verify auto-reset.
-  - Fast-forward buttons: Adds elapsed time (+5m, +15m, +1h) to hit color thresholds quickly.
+## Customization
 
-Acceptance Criteria Mapping
-- Launch shows `00:00` with greenish background and increments every second.
-- Leaving Mac untouched >5m: on first input, timer resets to `00:00` and color resets to green.
-- Background color transitions smoothly from green → yellow/orange → red as elapsed crosses thresholds (defaults 15/45m). Thresholds are editable and persisted.
-- Start/Pause/Reset are available in the menu. Quit and relaunch preserves preferences/state.
+You can customize Chill's behavior through the **Preferences** window:
 
-Notes & Known Limitations
-- Minimum deployment is macOS 13 (MenuBarExtra). A legacy NSStatusBar fallback can be added for macOS 12 by introducing an NSStatusItem controller and hosting SwiftUI in the status item button.
-- App icon is not required for a menu bar utility; Xcode may show a warning if an AppIcon is not set.
+*   **Yellow at:** Set the time when the timer turns yellow. (Options: 15m, 30m, 45m, 60m)
+*   **Red at:** Set the time when the timer turns red. (Options: 30m to 180m in 15m increments)
+*   **End session when idle for:** Configure how long you need to be idle before the session automatically ends. (Options: 1m to 10m)
+
+## Building from Source
+
+1.  Clone this repository.
+2.  Open `Chill.xcodeproj` in Xcode.
+3.  Select the `Chill` scheme and run the application.
+
+## Contributions
+
+Contributions are welcome! If you have ideas for new features or improvements, feel free to open an issue or submit a pull request.
