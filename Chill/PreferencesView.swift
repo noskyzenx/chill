@@ -1,4 +1,3 @@
-// This is a new file, so there is no old code to replace.
 import SwiftUI
 
 struct PreferencesView: View {
@@ -9,9 +8,6 @@ struct PreferencesView: View {
     @AppStorage("Chill.idleResetSeconds") private var idleResetSeconds: Int = 300
 
     var showHeader: Bool = false
-    @State private var customYellowText: String = ""
-    @State private var customRedText: String = ""
-    @State private var customIdleText: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -22,27 +18,22 @@ struct PreferencesView: View {
 
             // Session first
             GroupBox("Session") {
-                VStack(alignment: .leading, spacing: 10) {
+                HStack {
                     Text("End session when idle for:")
-                    ClassicMenu(
-                        title: "\(idleResetSeconds/60)m",
-                        width: optionWidth,
-                        options: idleOptions().map { "\($0)m" }
-                    ) { label in
-                        if let m = Int(label.dropLast()) {
-                            idleResetSeconds = m * 60
+                    Spacer()
+                    Picker("", selection: Binding(
+                        get: { idleResetSeconds / 60 },
+                        set: { newMinutes in
+                            idleResetSeconds = newMinutes * 60
                             timer.updateIdleReset(seconds: idleResetSeconds)
                         }
+                    )) {
+                        ForEach(idleOptions(), id: \.self) { minutes in
+                            Text("\(minutes)m").tag(minutes)
+                        }
                     }
-                    HStack(spacing: 8) {
-                        Text("Custom (min):")
-                        TextField("", text: $customIdleText)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 64)
-                            .onSubmit { applyCustomIdle() }
-                        Button("Set") { applyCustomIdle() }
-                            .controlSize(.small)
-                    }
+                    .labelsHidden()
+                    .frame(width: optionWidth)
                 }
                 .padding(6)
             }
@@ -52,41 +43,27 @@ struct PreferencesView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     thresholdRow(
                         title: "Yellow at:",
-                        minutes: yellowThreshold / 60,
-                        options: yellowOptions(),
-                        onSelect: { m in
-                            yellowThreshold = m * 60
-                            if redThreshold <= yellowThreshold { redThreshold = yellowThreshold + 5*60 }
-                            timer.updateThresholds(yellow: yellowThreshold, red: redThreshold)
-                        }
+                        selection: Binding(
+                            get: { yellowThreshold / 60 },
+                            set: { newMinutes in
+                                yellowThreshold = newMinutes * 60
+                                if redThreshold <= yellowThreshold { redThreshold = yellowThreshold + 5*60 }
+                                timer.updateThresholds(yellow: yellowThreshold, red: redThreshold)
+                            }
+                        ),
+                        options: yellowOptions()
                     )
-                    HStack(spacing: 8) {
-                        Text("Custom (min):")
-                        TextField("", text: $customYellowText)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 64)
-                            .onSubmit { applyCustomYellow() }
-                        Button("Set") { applyCustomYellow() }
-                            .controlSize(.small)
-                    }
                     thresholdRow(
                         title: "Red at:",
-                        minutes: redThreshold / 60,
-                        options: redOptions(minYellow: yellowThreshold/60),
-                        onSelect: { m in
-                            redThreshold = max((yellowThreshold/60) + 5, m) * 60
-                            timer.updateThresholds(yellow: yellowThreshold, red: redThreshold)
-                        }
+                        selection: Binding(
+                            get: { redThreshold / 60 },
+                            set: { newMinutes in
+                                redThreshold = max((yellowThreshold/60) + 5, newMinutes) * 60
+                                timer.updateThresholds(yellow: yellowThreshold, red: redThreshold)
+                            }
+                        ),
+                        options: redOptions(minYellow: yellowThreshold/60)
                     )
-                    HStack(spacing: 8) {
-                        Text("Custom (min):")
-                        TextField("", text: $customRedText)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 64)
-                            .onSubmit { applyCustomRed() }
-                        Button("Set") { applyCustomRed() }
-                            .controlSize(.small)
-                    }
                 }
                 .padding(6)
             }
@@ -114,16 +91,17 @@ struct PreferencesView: View {
 }
 
 private extension PreferencesView {
-    func thresholdRow(title: String, minutes: Int, options: [Int], onSelect: @escaping (Int) -> Void) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+    func thresholdRow(title: String, selection: Binding<Int>, options: [Int]) -> some View {
+        HStack {
             Text(title)
-            ClassicMenu(
-                title: "\(minutes)m",
-                width: optionWidth,
-                options: options.map { "\($0)m" }
-            ) { label in
-                if let m = Int(label.dropLast()) { onSelect(m) }
+            Spacer()
+            Picker("", selection: selection) {
+                ForEach(options, id: \.self) { minutes in
+                    Text("\(minutes)m").tag(minutes)
+                }
             }
+            .labelsHidden()
+            .frame(width: optionWidth)
         }
     }
 
@@ -140,78 +118,6 @@ private extension PreferencesView {
     func idleOptions() -> [Int] { [1,2,3,5,10,15,20,30,45,60] }
 }
 
-private struct ClassicMenu: View {
-    var title: String
-    var width: CGFloat = 96
-    var options: [String]
-    var onSelect: (String) -> Void
+private let optionWidth: CGFloat = 96
 
-    var body: some View {
-        Menu {
-            ForEach(options, id: \.self) { label in
-                Button(label) { onSelect(label) }
-            }
-        } label: {
-            ClassicButton(text: title, width: width)
-        }
-        .menuStyle(.borderlessButton)
-    }
-}
 
-private let optionWidth: CGFloat = 120
-
-// MARK: - Helpers
-private extension PreferencesView {
-    func applyCustomYellow() {
-        guard let m = Int(customYellowText.trimmingCharacters(in: .whitespaces)), m >= 1 else { return }
-        yellowThreshold = m * 60
-        if redThreshold <= yellowThreshold { redThreshold = yellowThreshold + 5*60 }
-        timer.updateThresholds(yellow: yellowThreshold, red: redThreshold)
-        customYellowText = ""
-    }
-
-    func applyCustomRed() {
-        guard let m = Int(customRedText.trimmingCharacters(in: .whitespaces)), m >= 1 else { return }
-        redThreshold = max((yellowThreshold/60) + 5, m) * 60
-        timer.updateThresholds(yellow: yellowThreshold, red: redThreshold)
-        customRedText = ""
-    }
-
-    func applyCustomIdle() {
-        guard let m = Int(customIdleText.trimmingCharacters(in: .whitespaces)), m >= 1 else { return }
-        idleResetSeconds = m * 60
-        timer.updateIdleReset(seconds: idleResetSeconds)
-        customIdleText = ""
-    }
-}
-
-private struct ClassicButton: View {
-    let text: String
-    let width: CGFloat
-    @State private var isHover = false
-
-    var body: some View {
-        let shape = RoundedRectangle(cornerRadius: 5, style: .continuous)
-        HStack(spacing: 6) {
-            Text(text)
-                .lineLimit(1)
-                .truncationMode(.tail)
-            Image(systemName: "chevron.up.chevron.down")
-                .font(.caption2)
-                .opacity(0.9)
-        }
-        .font(.system(size: 12, weight: .semibold, design: .rounded))
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .frame(width: width, alignment: .center)
-        .background(
-            ZStack {
-                shape.fill(isHover ? Color.primary.opacity(0.1) : Color.clear)
-                shape.stroke(Color.primary.opacity(0.2), lineWidth: 1)
-            }
-        )
-        .animation(.easeInOut(duration: 0.15), value: isHover)
-        .onHover { isHover = $0 }
-        .contentShape(shape)
-    }
-}
