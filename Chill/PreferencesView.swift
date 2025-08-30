@@ -19,26 +19,24 @@ struct PreferencesView: View {
 
             // Session first
             GroupBox("Session") {
-                HoverableRow {
-                    HStack {
-                        Text("End session when idle for:")
-                        Spacer()
-                        Picker("", selection: Binding(
-                            get: { idleResetSeconds / 60 },
-                            set: { newMinutes in
-                                idleResetSeconds = newMinutes * 60
-                                timer.updateIdleReset(seconds: idleResetSeconds)
-                            }
-                        )) {
-                            ForEach(idleOptions(), id: \.self) { minutes in
-                                Text(formatMinutesToHoursAndMinutes(minutes)).tag(minutes)
-                            }
+                HStack {
+                    Text("End session when idle for:")
+                    Spacer()
+                    Picker("", selection: Binding(
+                        get: { idleResetSeconds / 60 },
+                        set: { newMinutes in
+                            idleResetSeconds = newMinutes * 60
+                            timer.updateIdleReset(seconds: idleResetSeconds)
                         }
-                        .labelsHidden()
-                        .frame(width: optionWidth)
+                    )) {
+                        ForEach(idleOptions(), id: \.self) { minutes in
+                            Text(formatMinutesToHoursAndMinutes(minutes)).tag(minutes)
+                        }
                     }
-                    .padding(6)
+                    .labelsHidden()
+                    .frame(width: optionWidth)
                 }
+                .padding(6)
             }
 
             // Color thresholds second
@@ -99,20 +97,18 @@ struct PreferencesView: View {
 
 private extension PreferencesView {
     func thresholdRow(title: String, selection: Binding<Int>, options: [Int]) -> some View {
-        HoverableRow {
-            HStack {
-                Text(title)
-                Spacer()
-                Picker("", selection: selection) {
-                    ForEach(options, id: \.self) { minutes in
-                        Text(formatMinutesToHoursAndMinutes(minutes)).tag(minutes)
-                    }
+        HStack {
+            Text(title)
+            Spacer()
+            Picker("", selection: selection) {
+                ForEach(options, id: \.self) { minutes in
+                    Text(formatMinutesToHoursAndMinutes(minutes)).tag(minutes)
                 }
-                .labelsHidden()
-                .frame(width: optionWidth)
             }
-            .padding(6)
+            .labelsHidden()
+            .frame(width: optionWidth)
         }
+        .padding(6)
     }
 
     func yellowOptions() -> [Int] {
@@ -139,25 +135,7 @@ private extension PreferencesView {
     }
 }
 
-private struct HoverableRow<Content: View>: View {
-    @State private var isHovered = false
-    let content: Content
 
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-
-    var body: some View {
-        content
-            .background(isHovered ? Color.gray.opacity(0.15) : Color.clear)
-            .cornerRadius(5)
-            .onHover { hovering in
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    isHovered = hovering
-                }
-            }
-    }
-}
 
 struct HoverButtonStyle: ButtonStyle {
     @State private var isHovered = false
