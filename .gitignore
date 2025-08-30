@@ -1,0 +1,7 @@
+# Xcode
+.DS_Store
+/build/
+/.build/
+/Packages/
+**/xcuserdata/
+*.xcuserstate
