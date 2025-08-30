@@ -17,74 +17,9 @@ struct PreferencesView: View {
                     .padding(.bottom, 10)
             }
 
-            // Session first
-            GroupBox("Session") {
-                HStack {
-                    Text("End session when idle for:")
-                    Spacer()
-                    Picker("", selection: Binding(
-                        get: { idleResetSeconds / 60 },
-                        set: { newMinutes in
-                            idleResetSeconds = newMinutes * 60
-                            timer.updateIdleReset(seconds: idleResetSeconds)
-                        }
-                    )) {
-                        ForEach(idleOptions(), id: \.self) { minutes in
-                            Text(formatMinutesToHoursAndMinutes(minutes)).tag(minutes)
-                        }
-                    }
-                    .labelsHidden()
-                    .frame(width: optionWidth)
-                }
-                .padding(6)
-            }
-
-            // Color thresholds second
-            GroupBox("Color thresholds") {
-                VStack(alignment: .leading, spacing: 15) {
-                    thresholdRow(
-                        title: "Yellow at:",
-                        selection: Binding(
-                            get: { yellowThreshold / 60 },
-                            set: { newMinutes in
-                                yellowThreshold = newMinutes * 60
-                                if redThreshold <= yellowThreshold { redThreshold = yellowThreshold + 15 * 60 }
-                                timer.updateThresholds(yellow: yellowThreshold, red: redThreshold)
-                            }
-                        ),
-                        options: yellowOptions()
-                    )
-                    thresholdRow(
-                        title: "Red at:",
-                        selection: Binding(
-                            get: { redThreshold / 60 },
-                            set: { newMinutes in
-                                redThreshold = max((yellowThreshold / 60) + 15, newMinutes) * 60
-                                timer.updateThresholds(yellow: yellowThreshold, red: redThreshold)
-                            }
-                        ),
-                        options: redOptions(minYellow: yellowThreshold / 60)
-                    )
-                }
-                .padding()
-            }
-
-            #if DEBUG
-            GroupBox("Debug") {
-                VStack(alignment: .leading, spacing: 12) {
-                    Toggle("Simulate idle > threshold", isOn: $timer.debugSimulateIdle)
-                    HStack(spacing: 10) {
-                        Button("+5m") { timer.fastForward(by: 5 * 60) }
-                        .buttonStyle(HoverButtonStyle())
-                        Button("+15m") { timer.fastForward(by: 15 * 60) }
-                        .buttonStyle(HoverButtonStyle())
-                        Button("+1h") { timer.fastForward(by: 60 * 60) }
-                        .buttonStyle(HoverButtonStyle())
-                    }
-                }
-                .padding()
-            }
-            #endif
+            sessionGroup
+            colorThresholdsGroup
+            debugGroup
         }
         .onAppear {
             // Ensure model mirrors persisted defaults when view opens
@@ -93,22 +28,105 @@ struct PreferencesView: View {
         }
         .padding()
     }
+
+    private var sessionGroup: some View {
+        GroupBox("Session") {
+            HStack {
+                Text("End session when idle for:")
+                    .frame(width: 180, alignment: .leading)
+                Spacer()
+                HoverableView {
+                    Menu {
+                        ForEach(idleOptions(), id: \.self) { minutes in
+                            Button(formatMinutesToHoursAndMinutes(minutes)) {
+                                idleResetSeconds = minutes * 60
+                                timer.updateIdleReset(seconds: idleResetSeconds)
+                            }
+                        }
+                    } label: {
+                        Text(formatMinutesToHoursAndMinutes(idleResetSeconds / 60))
+                    }
+                    .frame(width: optionWidth)
+                }
+            }
+            .padding(6)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var colorThresholdsGroup: some View {
+        GroupBox("Color thresholds") {
+            VStack(alignment: .leading, spacing: 15) {
+                thresholdRow(
+                    title: "Yellow at:",
+                    selection: Binding(
+                        get: { yellowThreshold / 60 },
+                        set: { newMinutes in
+                            yellowThreshold = newMinutes * 60
+                            if redThreshold <= yellowThreshold { redThreshold = yellowThreshold + 15 * 60 }
+                            timer.updateThresholds(yellow: yellowThreshold, red: redThreshold)
+                        }
+                    ),
+                    options: yellowOptions()
+                )
+                thresholdRow(
+                    title: "Red at:",
+                    selection: Binding(
+                        get: { redThreshold / 60 },
+                        set: { newMinutes in
+                            redThreshold = max((yellowThreshold / 60) + 15, newMinutes) * 60
+                            timer.updateThresholds(yellow: yellowThreshold, red: redThreshold)
+                        }
+                    ),
+                    options: redOptions(minYellow: yellowThreshold / 60)
+                )
+            }
+        }
+    }
+
+    private var debugGroup: some View {
+        #if DEBUG
+        GroupBox("Debug") {
+            VStack(alignment: .leading, spacing: 12) {
+                Toggle("Simulate idle > threshold", isOn: $timer.debugSimulateIdle)
+                HStack(spacing: 10) {
+                    Button("+5m") { timer.fastForward(by: 5 * 60) }
+                    .buttonStyle(HoverButtonStyle())
+                    Button("+15m") { timer.fastForward(by: 15 * 60) }
+                    .buttonStyle(HoverButtonStyle())
+                    Button("+1h") { timer.fastForward(by: 60 * 60) }
+                    .buttonStyle(HoverButtonStyle())
+                }
+            }
+            .padding()
+        }
+        #else
+        EmptyView()
+        #endif
+    }
 }
 
 private extension PreferencesView {
     func thresholdRow(title: String, selection: Binding<Int>, options: [Int]) -> some View {
         HStack {
             Text(title)
+                .frame(width: 180, alignment: .leading)
             Spacer()
-            Picker("", selection: selection) {
-                ForEach(options, id: \.self) { minutes in
-                    Text(formatMinutesToHoursAndMinutes(minutes)).tag(minutes)
+            HoverableView {
+                Menu {
+                    ForEach(options, id: \.self) { minutes in
+                        Button(formatMinutesToHoursAndMinutes(minutes)) {
+                            selection.wrappedValue = minutes
+                        }
+                    }
+                } label: {
+                    Text(formatMinutesToHoursAndMinutes(selection.wrappedValue))
                 }
+                .frame(width: optionWidth)
             }
-            .labelsHidden()
-            .frame(width: optionWidth)
         }
         .padding(6)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     func yellowOptions() -> [Int] {
@@ -136,6 +154,27 @@ private extension PreferencesView {
 }
 
 
+
+private struct HoverableView<Content: View>: View {
+    @State private var isHovered = false
+    let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    var body: some View {
+        content
+            .background(isHovered ? Color.gray.opacity(0.25) : Color.clear)
+            .cornerRadius(5)
+            .scaleEffect(isHovered ? 1.05 : 1.0)
+            .onHover { hovering in
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isHovered = hovering
+                }
+            }
+    }
+}
 
 struct HoverButtonStyle: ButtonStyle {
     @State private var isHovered = false
