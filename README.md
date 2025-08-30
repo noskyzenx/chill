@@ -2,7 +2,7 @@
 
 Chill is a subtle yet powerful menu bar application for macOS designed to help you be more mindful of your sitting time. It tracks how long you've been at your desk and provides a gentle, color-coded reminder to take a break.
 
-![Chill Screenshot](https://user-images.githubusercontent.com/12345/67890.png) <!--- Placeholder for a screenshot -->
+
 
 ## Features
 
