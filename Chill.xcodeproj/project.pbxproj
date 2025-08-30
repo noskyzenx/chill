@@ -7,16 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10000012025000000000001 /* chillApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000002025000000000001 /* chillApp.swift */; };
+		A10000012025000000000001 /* ChillApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000002025000000000001 /* ChillApp.swift */; };
 		A10000022025000000000001 /* SittingTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000002025000000000002 /* SittingTimer.swift */; };
 		A10000032025000000000001 /* ColorScale.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000002025000000000003 /* ColorScale.swift */; };
 		A10000042025000000000001 /* StatusItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000002025000000000004 /* StatusItemView.swift */; };
 		A10000052025000000000001 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000002025000000000005 /* PreferencesView.swift */; };
-		A1AAA0002025000000000001 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1AAA0001025000000000001 /* StatusBarController.swift */; };
 		A10000062025000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000002025000000000006 /* Assets.xcassets */; };
+		A1AAA0002025000000000001 /* StatusBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1AAA0001025000000000001 /* StatusBarController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4C7B4E822E63481D00483554 /* Chill.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Chill.entitlements; sourceTree = "<group>"; };
 		A10000002025000000000000 /* Chill.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = Chill.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000002025000000000001 /* ChillApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChillApp.swift; sourceTree = "<group>"; };
 		A10000002025000000000002 /* SittingTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SittingTimer.swift; sourceTree = "<group>"; };
@@ -42,7 +43,7 @@
 		A10000202025000000000001 = {
 			isa = PBXGroup;
 			children = (
-				A10000302025000000000001 /* chill */,
+				A10000302025000000000001 /* Chill */,
 				A10000212025000000000001 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -58,6 +59,7 @@
 		A10000302025000000000001 /* Chill */ = {
 			isa = PBXGroup;
 			children = (
+				4C7B4E822E63481D00483554 /* Chill.entitlements */,
 				A10000002025000000000001 /* ChillApp.swift */,
 				A10000002025000000000002 /* SittingTimer.swift */,
 				A10000002025000000000003 /* ColorScale.swift */,
@@ -68,7 +70,6 @@
 				A10000002025000000000007 /* Info.plist */,
 			);
 			path = Chill;
-			name = Chill;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,7 +136,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A10000012025000000000001 /* chillApp.swift in Sources */,
+				A10000012025000000000001 /* ChillApp.swift in Sources */,
 				A10000022025000000000001 /* SittingTimer.swift in Sources */,
 				A10000032025000000000001 /* ColorScale.swift in Sources */,
 				A10000042025000000000001 /* StatusItemView.swift in Sources */,
@@ -151,6 +152,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -171,10 +174,12 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = Chill/Chill.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2S226P5MUJ;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -187,6 +192,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Chill/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Chill;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -194,8 +201,8 @@
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				ONLY_ACTIVE_ARCH = YES;
-            PRODUCT_BUNDLE_IDENTIFIER = com.noskyzenx.Chill;
-            PRODUCT_NAME = Chill;
+				PRODUCT_BUNDLE_IDENTIFIER = com.noskyzenx.Chill;
+				PRODUCT_NAME = Chill;
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
 				SWIFT_VERSION = 5.0;
@@ -207,6 +214,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -227,10 +236,12 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = Chill/Chill.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 2S226P5MUJ;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -242,14 +253,16 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Chill/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Chill;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-            PRODUCT_BUNDLE_IDENTIFIER = com.noskyzenx.Chill;
-            PRODUCT_NAME = Chill;
+				PRODUCT_BUNDLE_IDENTIFIER = com.noskyzenx.Chill;
+				PRODUCT_NAME = Chill;
 				SDKROOT = macosx;
 				SUPPORTED_PLATFORMS = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -261,7 +274,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-			A10000502025000000000001 /* Build configuration list for PBXNativeTarget "Chill" */ = {
+		A10000502025000000000001 /* Build configuration list for PBXNativeTarget "Chill" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1FFF1002025000000000001 /* Debug */,
@@ -270,7 +283,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A1FFFFF12025000000000001 /* Build configuration list for PBXProject "chill" */ = {
+		A1FFFFF12025000000000001 /* Build configuration list for PBXProject "Chill" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A1FFF1002025000000000001 /* Debug */,

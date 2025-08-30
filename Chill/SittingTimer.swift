@@ -50,35 +50,10 @@ final class SittingTimer: ObservableObject {
         // Load persisted preferences
         let y = defaults.integer(forKey: Keys.yellow)
         let r = defaults.integer(forKey: Keys.red)
-        thresholds = .init(yellow: max(60, y), red: max(max(120, r), max(60, y) + 60))
-        idleResetSeconds = max(60, defaults.integer(forKey: Keys.idleReset))
+        thresholds = .init(yellow: y, red: r)
+        idleResetSeconds = defaults.integer(forKey: Keys.idleReset)
 
-        // Load persisted state
-        if let stateRaw = defaults.string(forKey: Keys.state), let s = TimerState(rawValue: stateRaw) {
-            state = s
-        }
-        pausedElapsed = max(0, defaults.integer(forKey: Keys.pausedElapsed))
-        if let epoch = defaults.object(forKey: Keys.sessionStart) as? Double {
-            sessionStart = Date(timeIntervalSince1970: epoch)
-        }
-
-        // Ensure a session start exists if running
-        if state == .running && sessionStart == nil {
-            let now = Date()
-            sessionStart = now
-            defaults.set(now.timeIntervalSince1970, forKey: Keys.sessionStart)
-        }
-
-        // Initialize displayedElapsed from persisted values
-        switch state {
-        case .running:
-            if let start = sessionStart { displayedElapsed = max(0, Int(Date().timeIntervalSince(start))) }
-        case .paused:
-            displayedElapsed = pausedElapsed
-        case .idle:
-            displayedElapsed = 0
-        }
-
+        resetToZero()
         startTicking()
     }
 
@@ -146,6 +121,19 @@ final class SittingTimer: ObservableObject {
             // Nothing extra; remain idle showing 00:00
             break
         }
+    }
+
+    func resetToZero() {
+        state = .running
+        displayedElapsed = 0
+        pausedElapsed = 0
+        let start = Date()
+        sessionStart = start
+
+        // Persist the reset state
+        defaults.set(state.rawValue, forKey: Keys.state)
+        defaults.set(start.timeIntervalSince1970, forKey: Keys.sessionStart)
+        defaults.set(0, forKey: Keys.pausedElapsed)
     }
 
     func fastForward(by seconds: Int) {
