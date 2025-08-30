@@ -5,3 +5,15 @@
 /Packages/
 **/xcuserdata/
 *.xcuserstate
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+
+# Logs
+*.log
