@@ -1,4 +1,5 @@
 import SwiftUI
+import LaunchAtLogin
 
 struct PreferencesView: View {
     @EnvironmentObject var timer: SittingTimer
@@ -19,6 +20,11 @@ struct PreferencesView: View {
 
             sessionGroup
             colorThresholdsGroup
+
+            LaunchAtLogin.Toggle {
+                Text("Start automatically at login")
+            }
+
             debugGroup
         }
         .onAppear {
